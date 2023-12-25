@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Movies from "./components/Movies";
 import Admin from "./components/Admin";
@@ -8,7 +8,7 @@ import Genres from "./components/Genres";
 import OneGenre from "./components/OneGenre";
 import EditMovie from "./components/EditMovie";
 import Login from "./components/Login";
-import GraphQL from "./components/GraphQL";
+import GraphQL from "./components/Query";
 import OneMovieGraphQL from "./components/OneMovieGraphQL";
 
 export default class App extends Component {
@@ -18,13 +18,25 @@ export default class App extends Component {
       jwt: "",
     };
     this.handleJWTChange(this.handleJWTChange.bind(this));
+
+    // start changes
+    this.counterRef = React.createRef();
+    this.counterSpan = null;
+
+    this.setCounterSpan = () => {
+      console.log("Called");
+      if (this.counterSpan) {
+        console.log("inside if");
+        this.counterSpan = this.counterRef;
+      }
+    }
   }
 
   componentDidMount() {
     let t = window.localStorage.getItem("jwt");
     if (t) {
       if (this.state.jwt === "") {
-        this.setState({jwt: JSON.parse(t)});
+        this.setState({ jwt: JSON.parse(t) });
       }
     }
   }
@@ -87,6 +99,10 @@ export default class App extends Component {
                   <li className="list-group-item">
                     <Link to="/graphql">GraphQL</Link>
                   </li>
+
+                  <li className="list-group-item">
+                    <Link to="/extra">Extras</Link>
+                  </li>
                 </ul>
               </nav>
             </div>
@@ -132,6 +148,10 @@ export default class App extends Component {
                   )}
                 />
 
+                <Route path="/extra">
+                  <Extras userCount={el => this.counterRef = el} />
+                </Route>
+
                 <Route path="/">
                   <Home />
                 </Route>
@@ -142,4 +162,42 @@ export default class App extends Component {
       </Router>
     );
   }
+}
+
+function Extras(props) {
+  let [count, setCount] = useState(0);
+
+  // const countRef = document.getElementById("counter");
+
+  // useEffect(() => {
+  //   console.log("I was called using the useEffect hook");
+  // })
+
+  useEffect(() => {
+    console.log("I was called from useEffect");
+    return () => {
+      console.log("I am firing from the return statement");
+    }
+  })
+
+  return (
+    <Fragment>
+      <p>
+        <button
+          className="btn btn-primary"
+          onClick={() => setCount(count + 1)}
+        >
+          Add 1
+        </button>
+
+        <button
+          className="btn btn-danger ms-2"
+          onClick={() => setCount(count - 1)}
+        >
+          Subtract 1
+        </button>
+      </p>
+      <div>{count}</div>
+    </Fragment>
+  );
 }
